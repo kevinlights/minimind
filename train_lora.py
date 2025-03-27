@@ -80,6 +80,7 @@ def train_epoch(epoch, wandb):
         if (step + 1) % args.save_interval == 0 and (not ddp or dist.get_rank() == 0):
             model.eval()
             # 【区别1】只保存lora权重即可
+            os.makedirs(f'{args.save_dir}/lora', exist_ok=True)
             save_lora(model, f'{args.save_dir}/lora/{args.lora_name}_{lm_config.dim}.pth')
             model.train()
 
@@ -88,7 +89,8 @@ def init_model(lm_config):
     tokenizer = AutoTokenizer.from_pretrained('./model/minimind_tokenizer')
     model = MiniMindLM(lm_config)
     moe_path = '_moe' if lm_config.use_moe else ''
-    ckp = f'./out/rlhf_{lm_config.dim}{moe_path}.pth'
+    # ckp = f'./out/rlhf_{lm_config.dim}{moe_path}.pth'
+    ckp = f'./out/{args.base_model}_{lm_config.dim}{moe_path}.pth'
     state_dict = torch.load(ckp, map_location=args.device)
     model.load_state_dict(state_dict, strict=False)
     return model.to(args.device), tokenizer
@@ -129,6 +131,7 @@ if __name__ == "__main__":
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
     parser.add_argument("--data_path", type=str, default="./dataset/lora_identity.jsonl")
+    parser.add_argument("--base_model", type=str, default="rlhf")
     parser.add_argument("--lora_name", type=str, default="lora_identity", help="根据任务保存成lora_(英文/医学/心理...)")
     args = parser.parse_args()
 

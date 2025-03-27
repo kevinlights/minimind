@@ -1,0 +1,1 @@
+git clone https://hf-mirror.com/jingyaogong/MiniMind2
