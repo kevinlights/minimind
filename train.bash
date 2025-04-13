@@ -2,7 +2,7 @@ set -e
 
 function shorten() {
     python shorten_data.py --src "dataset/pretrain_hq.jsonl" --target "dataset/pretrain_hq_mini.jsonl" --lines 5000
-    python shorten_data.py --src "dataset/sft_mini_512.jsonl" --target "dataset/sft_mini_512_mini.jsonl" --lines 1000
+    python shorten_data.py --src "dataset/sft_mini_512.jsonl" --target "dataset/sft_mini_512_mini.jsonl" --lines 10000
     python shorten_data.py --src "dataset/dpo.jsonl" --target "dataset/dpo_mini.jsonl" --lines 100
 }
 

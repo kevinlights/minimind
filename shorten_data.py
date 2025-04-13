@@ -3,6 +3,7 @@ import random
 def random_lines(input_file, output_file, N):
     reservoir = []
     with open(input_file, 'r') as file:
+        # print(f"total lines: {len(file.readlines())}")
         # Fill the reservoir with first N lines
         for _ in range(N):
             line = file.readline()
@@ -22,6 +23,7 @@ def random_lines(input_file, output_file, N):
     # Write the chosen lines to the output file
     with open(output_file, 'w') as file:
         file.writelines(reservoir)
+        print(f"new lines: {len(reservoir)}")
 
 
 if __name__ == "__main__":
