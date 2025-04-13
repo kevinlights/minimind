@@ -15,7 +15,7 @@ function pretrain() {
         --batch_size 8 \
         --device mps \
         --dtype float32 \
-        --dim 128 \
+        --dim $dim \
         --log_interval 50 \
         --save_interval 50 \
         --data_path ./dataset/pretrain_hq_mini.jsonl
@@ -32,7 +32,7 @@ function sft() {
         --batch_size 8 \
         --device mps \
         --dtype float32 \
-        --dim 128 \
+        --dim $dim \
         --log_interval 50 \
         --save_interval 50 \
         --data_path ./dataset/sft_mini_512_mini.jsonl
@@ -47,7 +47,7 @@ function dpo() {
         --batch_size 8 \
         --device cpu \
         --dtype float32 \
-        --dim 128 \
+        --dim $dim \
         --log_interval 50 \
         --save_interval 50 \
         --data_path ./dataset/dpo_mini.jsonl
@@ -56,39 +56,40 @@ function dpo() {
 function eval() {
     python eval_model.py \
         --device mps \
-        --dim 128 \
+        --dim $dim \
         --model_mode 1 # 默认为0：测试pretrain模型效果，设置为1：测试full_sft模型效果
 }
 
 # LoRA (Low-Rank Adaptation)
 # LoRA是一种高效的参数高效微调（Parameter-Efficient Fine-Tuning, PEFT）方法，旨在通过低秩分解的方式对预训练模型进行微调。 相比于全参数微调（Full Fine-Tuning），LoRA 只需要更新少量的参数。 LoRA 的核心思想是：在模型的权重矩阵中引入低秩分解，仅对低秩部分进行更新，而保持原始预训练权重不变。 代码可见./model/model_lora.py和train_lora.py，完全从0实现LoRA流程，不依赖第三方库的封装。
 function trainlora() {
-    lora="lora_medical"
-    # lora="lora_identity"
+    # lora="lora_medical"
+    lora="lora_identity"
     python train_lora.py \
         --epochs 1 \
         --batch_size 8 \
         --device mps \
         --dtype float32 \
-        --dim 128 \
+        --dim $dim \
         --log_interval 50 \
-        --save_interval 50 \
+        --save_interval 1 \
         --data_path ./dataset/"$lora".jsonl \
+        --base_model full_sft \
         --lora_name "$lora"
 }
 
 function eval_lora() {
-    lora="lora_medical"
-    # lora="lora_identity"
+    # lora="lora_medical"
+    lora="lora_identity"
 
     python eval_model.py \
         --lora_name "$lora" \
         --device mps \
-        --dim 128 \
+        --dim $dim \
         --model_mode 1
 }
 
-
+dim=512
 
 cmd="$1"
 
